@@ -30,8 +30,7 @@ jobs:
         cd `cat /tmp/WLEDtemp/wledfoldername`
         npm install
         echo '[env:custom_build]' >>platformio.ini
-        echo 'extends = env:nodemcuv2' >>platformio.ini
-        echo 'build_flags = ${env:nodemcuv2.build_flags} -D WLED_ENABLE_PIXART -D USERMOD_WORDCLOCK -D USERMOD_ANALOG_CLOCK -D USERMOD_SEVEN_SEGMENT -D USERMOD_SSDR' >>platformio.ini
+        echo 'extends = env:d1_mini' >>platformio.ini
         
         echo 'build_unflags= -D WLED_RELEASE_NAME' >>platformio.ini
         pio run -e custom_build || pio run -e custom_build
