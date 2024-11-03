@@ -21,15 +21,6 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
 
-    - name: Create Custom Usermod
-      run: |
-        mkdir -p /tmp/WLEDtemp/usermods
-        cat > /tmp/WLEDtemp/usermods/usermod_zalgiris_effects.h << 'EOL'
-        #pragma once
-        #include "wled.h"
-        // ... paste the entire usermod code here ...
-        EOL
-
     - name: Run PlatformIO
       run: |
         rm -rf /tmp/WLEDtemp/* || true
@@ -39,25 +30,13 @@ jobs:
         find /tmp/WLEDtemp -maxdepth 1 -mindepth 1 -name "*" -type d >> /tmp/WLEDtemp/wledfoldername
         cd `cat /tmp/WLEDtemp/wledfoldername`
         npm install
-
-        # Copy custom usermod
-        cp /tmp/WLEDtemp/usermods/usermod_zalgiris_effects.h wled00/
-
-        # Update platformio.ini
         echo '[env:custom_build]' >>platformio.ini
         echo 'extends = env:esp32dev' >>platformio.ini
-        echo 'build_flags = ${env:esp32dev.build_flags}' >>platformio.ini
-        echo '  -D USERMOD_PING_PONG_CLOCK' >>platformio.ini
-        echo '  -D USERMOD_WORDCLOCK' >>platformio.ini
-        echo '  -D USERMOD_ANALOG_CLOCK' >>platformio.ini
-        echo '  -D USERMOD_ZALGIRIS' >>platformio.ini
-        echo 'build_unflags = -D WLED_RELEASE_NAME' >>platformio.ini
-
-        # Update usermods_list.cpp
-        echo '#include "usermod_zalgiris_effects.h"' >> wled00/usermods_list.cpp
-        echo 'void registerUsermods() {' >> wled00/usermods_list.cpp
-        echo '  usermods.add(new ZalgirisEffects());' >> wled00/usermods_list.cpp
-        echo '}' >> wled00/usermods_list.cpp
+        echo 'build_flags = ${env:esp32dev.build_flags} -D USERMOD_PING_PONG_CLOCK -D USERMOD_WORDCLOCK -D USERMOD_ANALOG_CLOCK' >>platformio.ini
+        echo 'build_unflags= -D WLED_RELEASE_NAME' >>platformio.ini
+        
+        # Copy custom usermod files
+        cp -r $GITHUB_WORKSPACE/usermods/* wled00/
 
         pio run -e custom_build || pio run -e custom_build
 
@@ -76,5 +55,5 @@ jobs:
         git config user.email "<>"
         git add $GITHUB_WORKSPACE/custom_build.bin
         git add $GITHUB_WORKSPACE/last_update_date.txt
-        git commit -m "Add Zalgiris Effects Custom Build"
+        git commit -m "Commit Custom Build"
         git push origin main
