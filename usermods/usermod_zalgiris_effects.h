@@ -8,7 +8,7 @@ class ZalgirisEffects : public Usermod {
     
   public:
     void setup() {
-      // Initialize the effect
+      // Initialize
     }
 
     void loop() {
@@ -17,7 +17,9 @@ class ZalgirisEffects : public Usermod {
       unsigned long now = millis();
       if (now - lastTime < 50) return;
       lastTime = now;
-      
-      // Effect logic here
+    }
+
+    uint16_t getId() {
+      return USERMOD_ID_ZALGIRIS;
     }
 };
